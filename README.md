@@ -44,73 +44,91 @@ Note that `options.ctx` and `crtfile` / `keyfile` are mutually exclusive. Please
 The callbacks in `routes` will all receive a `response` object as their argument. Its methods and properties are described below:
 
 #### *table (lua-http headers)* `request_headers`
-    The request's associated headers.
+
+The request's associated headers.
 
 #### *table (lua-http stream)* `stream`
-    The underlying stream from client to server.
+
+The underlying stream from client to server.
 
 #### *string (peername)* `peername`
-    The address of the peer of the connection.
+
+The address of the peer of the connection.
 
 #### *string* `path`
-    The request's path with the query and fragment removed.
+
+The request's path with the query and fragment removed.
 
 #### *table* `query`
-    A table containing the query portion of the request's path as key-value pairs (all strings).
+
+A table containing the query portion of the request's path as key-value pairs (all strings).
 
 #### *string* `fragment`
-    The fragment portion of the request's path. This will be `""` if there was no fragment.
+
+The fragment portion of the request's path. This will be `""` if there was no fragment.
 
 #### *string* `method`
-    The request's HTTP method.
+
+The request's HTTP method.
 
 #### *table (lua-http headers)* `headers`
-    The headers to send back with the response.
+
+The headers to send back with the response.
 
 
 #### *string* `response:get_body()`
-    Retrieves the request's body, and will decompress it if necessary.
+
+Retrieves the request's body, and will decompress it if necessary.
 
 #### *void* `response:set_body(body)`
-    Sets the body to send back in the response.
+
+Sets the body to send back in the response.
 
 - *string* `body`
 
 #### *void* `response:set_500()`
-    Sets the status code to `500` and sets an appropriate default body.
+
+Sets the status code to `500` and sets an appropriate default body.
 
 #### *void* `response:set_503()`
-    Sets the status code to `503` and sets an appropriate default body.
+
+Sets the status code to `503` and sets an appropriate default body.
 
 #### *void* `response:set_401(msg)`
-    Sets the status code to `401` and sets an appropriate default body.
+
+Sets the status code to `401` and sets an appropriate default body.
 
 - *string* `msg`
     An alternative error message to be sent as `text/plain`.
 
 #### *void* `response:set_ok()`
-    Sets the status code to `204`.
+
+Sets the status code to `204`.
 
 #### *void* `response:set_ok_and_reply(body, content_type)`
-    Sets the status code to `200` and sets the body and content type.
+
+Sets the status code to `200` and sets the body and content type.
 
 - *string* `body`
 - *string (content type)* `content_type`
 
 #### *void* `response:set_ok_and_reply(code, body, content_type)`
-    Sets the status code and sets the body and content type.
+
+Sets the status code and sets the body and content type.
 
 - *integer (HTTP status code)* `code`
 - *string* `body`
 - *string (content type)* `content_type`
 
 #### *void* `response:redirect(location)`
-    Sets the status code to `302` and sets the location header.
+
+Sets the status code to `302` and sets the location header.
 
 - *string (uri)* `location`
 
 #### *void* `response:redirect(code, location)`
-    Sets the status code and sets the location header.
+
+Sets the status code and sets the location header.
 
 - *integer (HTTP status code in [300, 400) )* `code`
     This value will become `302` if it is outside the valid 3XX range.
