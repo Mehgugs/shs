@@ -122,7 +122,7 @@ local response_mt = {
     __name = nil;
 }
 
-local function new_response(request_headers, stream)
+local function new_response(request_headers, stream, data)
     local headers = new_headers();
     headers:append(":status", "500")
     local _, peer = stream:peername()
@@ -156,6 +156,7 @@ local function new_response(request_headers, stream)
         method = request_headers:get":method",
         headers = headers,
         body = nil,
+        data = data,
     }, response_mt)
 end
 
@@ -182,7 +183,14 @@ local function check_compressed(headers, raw)
 end
 
 function response_methods:get_body()
-    return check_compressed(self.request_headers, self.stream:get_body_as_string())
+    local bytes
+    if not self._receivedbody then
+        bytes = check_compressed(self.request_headers, self.stream:get_body_as_string())
+        self._receivedbody = bytes
+    else
+        bytes = self._receivedbody
+    end
+   return bytes
 end
 
 function response_methods:set_body(body)
@@ -286,6 +294,8 @@ function new(options, crtfile, keyfile)
         end
     end
 
+    local data = options.data
+
     local function onstream(_, stream)
         local req_headers, err, errno = stream:get_headers()
         if req_headers == nil then
@@ -297,7 +307,7 @@ function new(options, crtfile, keyfile)
             return
         end
 
-        local resp = new_response(req_headers, stream)
+        local resp = new_response(req_headers, stream, data)
         resp.headers:append("server", server_name)
 
         local ok,err2

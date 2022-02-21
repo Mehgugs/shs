@@ -28,6 +28,9 @@ Constructs a new lua-http server configured according to `options`.
 - *string* `options.server`
     An optional string to set as the value of the server header. This should be a name identifying your application, by default this will be `"shs-http-server"`.
 
+- *anything* `options.data`
+    An optional value to be attached to response objects in their `.data` field.
+
 - *string (file path)* `crtfile`
     An optional file path which should be the location of your TLS certificate chain in PEM format.
 
@@ -63,13 +66,13 @@ The request's path with the query and fragment removed.
 
 A table containing the query portion of the request's path as key-value pairs (all strings).
 
-#### *string* `fragment`
-
-The fragment portion of the request's path. This will be `""` if there was no fragment.
-
 #### *string* `method`
 
 The request's HTTP method.
+
+#### *anything* `data`
+
+Data attached to the response from the [new](#table-lua-http-server-newoptions-crtfile-keyfile) option `data`.
 
 #### *table (lua-http headers)* `headers`
 
