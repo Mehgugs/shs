@@ -1,32 +1,37 @@
 --- Adapted from https://gist.github.com/daurnimator/192dc5b210718dd129cfc1e5986df97b
-local ce = require "cqueues.errno"
-local new_headers = require "http.headers".new
-local server = require "http.server"
-local http_util = require "http.util"
-local zlib = require "http.zlib"
-local http_tls = require "http.tls"
-local openssl_ssl = require "openssl.ssl"
-local openssl_ctx = require "openssl.ssl.context"
-local Pkey = require "openssl.pkey"
-local Crt = require "openssl.x509"
-local Chain = require"openssl.x509.chain"
-
-local stderr = io.stderr
-local write = io.write
 local asserts = assert
-local try = pcall
+local iiter = ipairs
+local try  = pcall
 local setm = setmetatable
-local to_s = tostring
 local to_n = tonumber
-local typ = type
-local insert = table.insert
+local to_s = tostring
+local typ  = type
 
 local openf = io.open
-local date = os.date
-local fmt = string.format
-local query_args = http_util.query_args
+local stderr = io.stderr
+local write = io.write
 
-local iiter = ipairs
+local date = os.date
+
+local insert = table.insert
+
+local fmt = string.format
+
+local ce          = require "cqueues.errno"
+
+local new_headers = require "http.headers".new
+local server      = require "http.server"
+local http_tls    = require "http.tls"
+local http_util   = require "http.util"
+local zlib        = require "http.zlib"
+
+local Pkey        = require "openssl.pkey"
+local openssl_ssl = require "openssl.ssl"
+local openssl_ctx = require "openssl.ssl.context"
+local Crt         = require "openssl.x509"
+local Chain       = require"openssl.x509.chain"
+
+local query_args = http_util.query_args
 local TEXT =  "text/plain; charset=UTF-8"
 
 --luacheck: ignore 111
@@ -122,7 +127,7 @@ local response_mt = {
     __name = nil;
 }
 
-local function new_response(request_headers, stream, data)
+local function new_response(request_headers, stream, data, mtover)
     local headers = new_headers();
     headers:append(":status", "500")
     local _, peer = stream:peername()
@@ -157,7 +162,7 @@ local function new_response(request_headers, stream, data)
         headers = headers,
         body = nil,
         data = data,
-    }, response_mt)
+    }, mtover or response_mt)
 end
 
 function response_methods:combined_log()
@@ -295,6 +300,7 @@ function new(options, crtfile, keyfile)
     end
 
     local data = options.data
+    local mtover = options.response_mt
 
     local function onstream(_, stream)
         local req_headers, err, errno = stream:get_headers()
@@ -307,7 +313,7 @@ function new(options, crtfile, keyfile)
             return
         end
 
-        local resp = new_response(req_headers, stream, data)
+        local resp = new_response(req_headers, stream, data, mtover)
         resp.headers:append("server", server_name)
 
         local ok,err2
@@ -349,5 +355,7 @@ function new(options, crtfile, keyfile)
 end
 
 _ENV.diy_tls = new_ctxlit
+
+_ENV.response_mt = response_mt
 
 return _ENV

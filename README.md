@@ -31,6 +31,9 @@ Constructs a new lua-http server configured according to `options`.
 - *anything* `options.data`
     An optional value to be attached to response objects in their `.data` field.
 
+- *table* `options.response_mt`
+    An optional table to override the default response object metatable. The default metatable is exported as `shs.response_mt`.
+
 - *string (file path)* `crtfile`
     An optional file path which should be the location of your TLS certificate chain in PEM format.
 
